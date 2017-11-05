@@ -7,6 +7,7 @@ public class PlayerRef : MonoBehaviour {
     public static int health = 100;
     public static int powerMultiplier=2;
     public GameObject gameOverPanel;
+    public static bool gameOver;
     bool runOnce;
     //public static int score, scoreMultiplier = 100;
 	// Use this for initialization
@@ -28,6 +29,7 @@ public class PlayerRef : MonoBehaviour {
             if(!runOnce)
             {
                 gameOverPanel.SetActive(true);
+                gameOver = true;
             }
         }
 	}

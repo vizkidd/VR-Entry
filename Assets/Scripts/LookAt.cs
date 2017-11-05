@@ -14,7 +14,7 @@ public class LookAt : MonoBehaviour {
         if (target != null)
         {
             Vector3 tempPos = 2 * transform.position - target.position;
-            transform.LookAt(new Vector3(transform.position.x, transform.position.y, tempPos.z), transform.up);
+            transform.LookAt(new Vector3(tempPos.x, -transform.position.y, tempPos.z), transform.up);
         }
     }
 }
