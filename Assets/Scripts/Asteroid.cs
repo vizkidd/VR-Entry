@@ -15,6 +15,8 @@ public class Asteroid : MonoBehaviour {
     public float movementSpeed = 1f;
     public float health, healthSteps;
     public Image healthBar;
+    public LaserController laser;
+
     bool applyDamage, runOnce;
     GazeInput gazeInput;
     // Use this for initialization
@@ -22,8 +24,8 @@ public class Asteroid : MonoBehaviour {
         asteroidTransform = GetComponent<Transform>();
         gazeInput = GetComponent<GazeInput>();
         //asteroidMesh = asteroidObj.GetComponent<MeshRenderer>();
-        health = Random.Range(50, 150);
-        movementSpeed = Random.Range(20, 50);
+        health = Random.Range(50, 100);
+        movementSpeed = Random.Range(60, 120);
         if (HealthSet != null)
         {
             HealthSet.Invoke();
@@ -33,18 +35,27 @@ public class Asteroid : MonoBehaviour {
         gazeInput.PointerEnter.AddListener(DecreaseHealth);
         gazeInput.PointerExit.AddListener(HideHealthBar);
 
+        //set laser
+        laser = LaserController.instance;
+
         //hide health
         healthBar.enabled = false;
     }
 
     void HideHealthBar()
     {
+        //stop firing 
+        laser.StopFiring();
+
         Debug.Log("Hide Health");
         healthBar.enabled = false;
         applyDamage = false;
     }
     private void DecreaseHealth()
     {
+        //fire laser at asteroid
+        laser.FireAtTarget(asteroidObj.transform);
+
         Debug.Log("Show Health");
         healthBar.enabled = true;
         applyDamage = true;

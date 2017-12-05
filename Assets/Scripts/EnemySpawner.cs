@@ -39,7 +39,7 @@ public class EnemySpawner : MonoBehaviour {
                     if (temp != null)
                         asteroids.Add(temp);
 
-                    Debug.Log(Count);
+                    //Debug.Log(Count);
 
                 }
                 else
