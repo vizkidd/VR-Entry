@@ -13,7 +13,7 @@ public class GazeInput : MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("Enter");
+        //Debug.Log("Enter");
         gazing = true;
         if(PointerEnter!=null)
         {
@@ -23,7 +23,7 @@ public class GazeInput : MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("Exit");
+        //Debug.Log("Exit");
         gazing = false;
         timer = 0;
         if (PointerExit != null)
@@ -52,7 +52,7 @@ public class GazeInput : MonoBehaviour, IPointerEnterHandler,IPointerExitHandler
                         GazeComplete.Invoke();
 
                     }
-                    Debug.Log("Gazed");
+                    //Debug.Log("Gazed");
 
                     timer = 0;
                     gazing = false;

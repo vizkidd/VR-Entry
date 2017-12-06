@@ -5,9 +5,10 @@ using UnityEngine;
 public class PlayerRef : MonoBehaviour {
     public static Transform playerTransform;
     public static int health = 100;
-    public static int powerMultiplier=2;
+    public static int powerMultiplier=6;
     public GameObject gameOverPanel;
     public static bool gameOver;
+
     bool runOnce;
     //public static int score, scoreMultiplier = 100;
 	// Use this for initialization
