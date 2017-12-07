@@ -1,13 +1,15 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+
 public class Asteroid : MonoBehaviour {
     public UnityEvent HealthSet;
     public ParticleSystem explosion;
-    //public MeshRenderer asteroidMesh;
+    Renderer asteroidMesh;
     Transform asteroidTransform;
     public cakeslice.Outline asteroidOutline;
     public GameObject asteroidObj;
@@ -17,10 +19,15 @@ public class Asteroid : MonoBehaviour {
     public Image healthBar;
     public LaserController laser;
 
+    private bool _isInView;
+    public bool IsInView { get { return _isInView; } }
+
     bool applyDamage, runOnce;
     GazeInput gazeInput;
     // Use this for initialization
     void Start () {
+        gameObject.tag = "Asteroid";
+        asteroidMesh = asteroidObj.GetComponent<MeshRenderer>();
         asteroidTransform = GetComponent<Transform>();
         gazeInput = GetComponent<GazeInput>();
         //asteroidMesh = asteroidObj.GetComponent<MeshRenderer>();
@@ -65,15 +72,16 @@ public class Asteroid : MonoBehaviour {
     void Update () {
         if (!moveTowardsPlayer)
         {
-            
             asteroidTransform.position += Vector3.back * Time.deltaTime * movementSpeed;
         }
         else
         {
             float step = movementSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(asteroidTransform.position, PlayerRef.playerTransform.position, step);
+            //if it's moving towards pplayer update IsInView check
+            _isInView = Check_ObjectIsInView();
         }
-        if(applyDamage)
+        if (applyDamage)
         {
             health -= Time.deltaTime * gazeInput.gazeTime*PlayerRef.powerMultiplier;
             if (health <= 0)
@@ -85,6 +93,12 @@ public class Asteroid : MonoBehaviour {
 
         
 	}
+
+    public bool Check_ObjectIsInView()
+    {
+        return asteroidTransform.IsInView(); ;
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.tag == "Player")
@@ -96,7 +110,7 @@ public class Asteroid : MonoBehaviour {
             }
             DestroyAsteroid();
         }
-        else if(collision.collider.tag == "DeadZone")
+        else if(collision.collider.tag == "DeadZone" || collision.collider.tag == "Asteroid")
         {
             Destroy(this.gameObject);
         }
@@ -108,6 +122,7 @@ public class Asteroid : MonoBehaviour {
         StartCoroutine(PlayExplosion());
         
     }
+
     IEnumerator PlayExplosion()
     {
         //play animation

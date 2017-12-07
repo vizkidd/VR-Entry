@@ -8,7 +8,7 @@ public class PlayerRef : MonoBehaviour {
     public static int powerMultiplier=6;
     public GameObject gameOverPanel;
     public static bool gameOver;
-
+    
     bool runOnce;
     //public static int score, scoreMultiplier = 100;
 	// Use this for initialization
@@ -24,7 +24,10 @@ public class PlayerRef : MonoBehaviour {
         health += value;
     }
     void Update () {
-		if(health<=0)
+        //recente input tracking after game begins, implement wisely in future
+        //InputTracking.Recenter();
+        
+        if (health<=0)
         {
             //gameover
             if(!runOnce)
