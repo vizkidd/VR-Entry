@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour {
-    Transform enemyTransform;
+    Transform enemySpawnerTransform;
     public GameObject asteroidPrefab;
     public int maxAggressiveObjects=1;
     public static List<Asteroid> aggressiveEnemies;
@@ -22,8 +22,8 @@ public class EnemySpawner : MonoBehaviour {
     // Use this for initialization
     void Start () {
         aggressiveEnemies = new List<Asteroid>();
-        enemyTransform = GetComponent<Transform>();
-        enemyTransform.LookAt(PlayerRef.playerTransform);
+        enemySpawnerTransform = GetComponent<Transform>();
+        enemySpawnerTransform.LookAt(PlayerRef.instance.playerTransform);
         enemies = new List<GameObject>();
 	}
 	
@@ -37,10 +37,18 @@ public class EnemySpawner : MonoBehaviour {
                 {
 
                     //spawn
-                    GameObject temp = Instantiate(asteroidPrefab, new Vector3(Random.insideUnitCircle.x * (Screen.width / 2), Random.insideUnitCircle.y * (Screen.height / 2), enemyTransform.position.z), Quaternion.identity, enemyTransform) as GameObject;
+                    GameObject temp = Instantiate(asteroidPrefab, new Vector3(Random.insideUnitCircle.x * (Screen.width / 2), Random.insideUnitCircle.y * (Screen.height / 2), enemySpawnerTransform.position.z), Quaternion.identity, enemySpawnerTransform) as GameObject;
                     //temp.GetComponent<Outline>().enabled = false;
+
                     if (temp != null)
+                    {
+
+                        //set random scale
+                        float randomScale = Random.Range(0.5f, 3);
+                        temp.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
+                        //add to list
                         enemies.Add(temp);
+                    }
                     //remove nulls after creating an asteroid
                     enemies = enemies.Where(item => item != null).ToList();
 

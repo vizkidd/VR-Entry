@@ -61,7 +61,7 @@ public class LaserController : MonoBehaviour {
             distance=Vector3.Distance(startPoint, transform.position);
             if (targetTransform != null && distance > thresholdDistance)
             {
-                laserBeam.SetStartAndEndPoints(startPoint, new Vector3(startPoint.x,startPoint.y,targetTransform.transform.position.z-5f));
+                laserBeam.SetStartAndEndPoints(startPoint, new Vector3(startPoint.x,3/* focus beam to center of reticle*/,targetTransform.transform.position.z-5f));
             }
             else
                 StopFiring();

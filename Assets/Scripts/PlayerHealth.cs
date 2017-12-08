@@ -12,6 +12,6 @@ public class PlayerHealth : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        healthText.text = "Health: " + PlayerRef.health;
+        healthText.text = "Health: " + PlayerRef.instance.health;
     }
 }

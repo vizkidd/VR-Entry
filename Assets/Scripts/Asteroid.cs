@@ -77,13 +77,13 @@ public class Asteroid : MonoBehaviour {
         else
         {
             float step = movementSpeed * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(asteroidTransform.position, PlayerRef.playerTransform.position, step);
+            transform.position = Vector3.MoveTowards(asteroidTransform.position, PlayerRef.instance.playerTransform.position, step);
             //if it's moving towards pplayer update IsInView check
             _isInView = Check_ObjectIsInView();
         }
         if (applyDamage)
         {
-            health -= Time.deltaTime * gazeInput.gazeTime*PlayerRef.powerMultiplier;
+            health -= Time.deltaTime * gazeInput.gazeTime*PlayerRef.instance.powerMultiplier;
             if (health <= 0)
             {
                 PlayerRef.IncreaseHealth(5);
