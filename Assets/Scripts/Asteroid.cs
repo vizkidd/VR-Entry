@@ -9,8 +9,8 @@ using UnityEngine.UI;
 public class Asteroid : MonoBehaviour {
     public UnityEvent HealthSet;
     public ParticleSystem explosion;
-    Renderer asteroidMesh;
-    Transform asteroidTransform;
+    public Renderer asteroidMesh;
+    public Transform asteroidTransform;
     public cakeslice.Outline asteroidOutline;
     public GameObject asteroidObj;
     public bool moveTowardsPlayer;
@@ -19,18 +19,31 @@ public class Asteroid : MonoBehaviour {
     public Image healthBar;
     public LaserController laser;
 
-    private bool _isInView;
+    private bool _isInView,_wasInView;
     public bool IsInView { get { return _isInView; } }
 
     bool applyDamage, runOnce;
     GazeInput gazeInput;
-    // Use this for initialization
+
+    #region TODO
+    //1.Normalize health and scale. as health decreases, the scale should also decreases
+    //2.Create money for asteroid based on scale, money is fixed for small,medium and large asteroids
+    #endregion
+
     void Start () {
         gameObject.tag = "Asteroid";
         asteroidMesh = asteroidObj.GetComponent<MeshRenderer>();
         asteroidTransform = GetComponent<Transform>();
         gazeInput = GetComponent<GazeInput>();
         //asteroidMesh = asteroidObj.GetComponent<MeshRenderer>();
+        
+        //set random scale
+        float randomScaleX = Random.Range(0.5f, 3);
+        float randomScaleZ = Random.Range(0.5f, 3);
+        float randomScaleY = Random.Range(randomScaleX, randomScaleZ);
+
+        asteroidTransform.localScale = new Vector3(randomScaleX, randomScaleY, randomScaleZ);
+
         health = Random.Range(50, 100);
         movementSpeed = Random.Range(60, 120);
         if (HealthSet != null)
@@ -78,8 +91,12 @@ public class Asteroid : MonoBehaviour {
         {
             float step = movementSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(asteroidTransform.position, PlayerRef.instance.playerTransform.position, step);
-            //if it's moving towards pplayer update IsInView check
+            //if it's moving towards player update IsInView check
+            _wasInView = _isInView;
             _isInView = Check_ObjectIsInView();
+            //update warning blip list if there is a change in view
+            if (_wasInView && !_isInView || _isInView && !_wasInView) //this reads as 'if it was in view & it is not in view now || if it is in view & it wasn't in view'
+            { WarningBlips.instance.UpdateList(this); }
         }
         if (applyDamage)
         {
@@ -112,13 +129,30 @@ public class Asteroid : MonoBehaviour {
         }
         else if(collision.collider.tag == "DeadZone" || collision.collider.tag == "Asteroid")
         {
-            Destroy(this.gameObject);
+            DestroyObject();
         }
     }
     
+    public void DestroyObject()
+    {
+        //for future reference
+        StartCoroutine(DestroyObject_CO());
+    }
+
+    IEnumerator DestroyObject_CO()
+    {
+        //remove asteroid from warning blip list
+        yield return new WaitUntil(() => { return WarningBlips.instance.RemoveBlip(this); });
+        Destroy(this.gameObject);
+    }
+
     public void DestroyAsteroid()
     {
         applyDamage = false;
+
+        //remove asteroid from warning blip list
+        WarningBlips.instance.RemoveBlip(this);
+
         StartCoroutine(PlayExplosion());
         
     }

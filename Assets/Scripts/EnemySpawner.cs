@@ -3,8 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class EnemySpawner : MonoBehaviour {
+
+    public static EnemySpawner instance;
+
     Transform enemySpawnerTransform;
     public GameObject asteroidPrefab;
     public int maxAggressiveObjects=1;
@@ -19,7 +23,26 @@ public class EnemySpawner : MonoBehaviour {
         get { return enemies.Count; }
     }
 
-    // Use this for initialization
+    #region TODO
+
+    #endregion
+
+    private void Awake()
+    {
+        MakeSingleton();
+    }
+    void MakeSingleton()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
+
     void Start () {
         aggressiveEnemies = new List<Asteroid>();
         enemySpawnerTransform = GetComponent<Transform>();
@@ -42,10 +65,6 @@ public class EnemySpawner : MonoBehaviour {
 
                     if (temp != null)
                     {
-
-                        //set random scale
-                        float randomScale = Random.Range(0.5f, 3);
-                        temp.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
                         //add to list
                         enemies.Add(temp);
                     }
@@ -76,14 +95,20 @@ public class EnemySpawner : MonoBehaviour {
         }
 	}
 
-    public static IEnumerator GetAggressiveEnemies_InView()
+    public Asteroid[] GetAggressiveEnemies_InView()
     {
-        yield return aggressiveEnemies.Where(item => item.IsInView == true).ToArray();
+        /*yield*/ return aggressiveEnemies.Where(item => item.IsInView == true).ToArray();
     }
 
-    IEnumerator GetAggressiveEnemies()
+    public Asteroid[] GetAggressiveEnemies()
     {
-        yield return aggressiveEnemies.ToArray();
+        /*yield*/ return aggressiveEnemies.ToArray();
+    }
+
+    public Asteroid[] GetAggressiveEnemies_NotInView()
+    {
+        /*yield*/
+        return aggressiveEnemies.Where(item => item.IsInView == false).ToArray();
     }
 
     IEnumerator DestroyAsteroidEach_CO()
