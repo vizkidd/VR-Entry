@@ -10,6 +10,7 @@ public enum GameScreen
 public class ScreenManager : MonoBehaviour {
     public static ScreenManager instance;
     public Canvas blipCanvas;
+    public Camera uiCamera;
 
     public GameScreen currentScreen;
     private void Awake()

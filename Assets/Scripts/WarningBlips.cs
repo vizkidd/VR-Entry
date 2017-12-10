@@ -43,6 +43,7 @@ public class WarningBlips : MonoBehaviour {
     
     void Start () {
         CanvasRect = ScreenManager.instance.blipCanvas.GetComponent<RectTransform>();
+        Debug.Log(CanvasRect.rect.width + " " + CanvasRect.rect.height);
         blipList = new Dictionary<Asteroid, GameObject>();
     }
 	
@@ -71,17 +72,21 @@ public class WarningBlips : MonoBehaviour {
         //wait until list is updated
         yield return new WaitUntil(() => { return !updatingLists; });
         blipList = blipList.Where(item => item.Key != null).ToDictionary(t => t.Key, t => t.Value);
-        Debug.Log("==================BLIP LIST======================");
 
         foreach (var item in blipList)
         {            
             Vector2 screenPos = Camera.main.WorldToViewportPoint(item.Key.asteroidTransform.position);
-            Vector2 WorldObject_ScreenPosition = new Vector2(((screenPos.x * CanvasRect.sizeDelta.x) - (CanvasRect.sizeDelta.x * 0.5f)), ((screenPos.y * CanvasRect.sizeDelta.y) - (CanvasRect.sizeDelta.y * 0.5f)));
+            Vector2 WorldObject_ScreenPosition = new Vector2(((screenPos.x * CanvasRect.sizeDelta.x) - (CanvasRect.sizeDelta.x * 0.5f)), (screenPos.y * CanvasRect.sizeDelta.y) - (CanvasRect.sizeDelta.y * 0.5f));
             Image tempBlipImg = item.Value.GetComponent<Image>();
             tempBlipImg.rectTransform.anchoredPosition = WorldObject_ScreenPosition;
             //set size of blip wrt the size of the mesh
             Rect rectangle = Get2DBoundsOf3DMesh(item.Key.asteroidMesh);
-            tempBlipImg.rectTransform.sizeDelta = new Vector2(rectangle.width / 2, rectangle.height / 2);
+            tempBlipImg.rectTransform.sizeDelta = new Vector2(rectangle.width , rectangle.height);
+            if(!tempBlipImg.enabled)
+            {
+                tempBlipImg.enabled = true;
+                item.Value.GetComponent<EasyTween>().OpenCloseObjectAnimation();
+            }
         }
 
         renderingBlips = false;
@@ -152,11 +157,12 @@ public class WarningBlips : MonoBehaviour {
                     break;
             }
             tempBlipImg.preserveAspect = true;
-            tempBlipImg.enabled = true;
-            if (blipList.ContainsKey(asteroid))
+            
+            if (!blipList.ContainsKey(asteroid))
             { blipList.Add(asteroid, tempBlipGO); }
             else
             {
+                Destroy(blipList[asteroid]);
                 blipList[asteroid] = tempBlipGO;
             }
 

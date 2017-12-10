@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class Asteroid : MonoBehaviour {
     public UnityEvent HealthSet;
+    public Canvas asteroidCanvas;
     public ParticleSystem explosion;
     public Renderer asteroidMesh;
     public Transform asteroidTransform;
@@ -18,6 +19,8 @@ public class Asteroid : MonoBehaviour {
     public float health, healthSteps;
     public Image healthBar;
     public LaserController laser;
+    //public GameObject warningBlipObject;
+
 
     private bool _isInView,_wasInView;
     public bool IsInView { get { return _isInView; } }
@@ -35,7 +38,7 @@ public class Asteroid : MonoBehaviour {
         asteroidMesh = asteroidObj.GetComponent<MeshRenderer>();
         asteroidTransform = GetComponent<Transform>();
         gazeInput = GetComponent<GazeInput>();
-        //asteroidMesh = asteroidObj.GetComponent<MeshRenderer>();
+        asteroidCanvas.worldCamera = ScreenManager.instance.uiCamera;
         
         //set random scale
         float randomScaleX = Random.Range(0.5f, 3);
@@ -45,6 +48,7 @@ public class Asteroid : MonoBehaviour {
         asteroidTransform.localScale = new Vector3(randomScaleX, randomScaleY, randomScaleZ);
 
         health = Random.Range(50, 100);
+        if(movementSpeed!=0)
         movementSpeed = Random.Range(60, 120);
         if (HealthSet != null)
         {
@@ -67,7 +71,7 @@ public class Asteroid : MonoBehaviour {
         //stop firing 
         laser.StopFiring();
 
-        Debug.Log("Hide Health");
+        //Debug.Log("Hide Health");
         healthBar.enabled = false;
         applyDamage = false;
     }
@@ -76,7 +80,7 @@ public class Asteroid : MonoBehaviour {
         //fire laser at asteroid
         laser.FireAtTarget(asteroidObj.transform);
 
-        Debug.Log("Show Health");
+        //Debug.Log("Show Health");
         healthBar.enabled = true;
         applyDamage = true;
         Debug.Log("Decrease Health");
@@ -96,7 +100,20 @@ public class Asteroid : MonoBehaviour {
             _isInView = Check_ObjectIsInView();
             //update warning blip list if there is a change in view
             if (_wasInView && !_isInView || _isInView && !_wasInView) //this reads as 'if it was in view & it is not in view now || if it is in view & it wasn't in view'
-            { WarningBlips.instance.UpdateList(this); }
+            {
+                WarningBlips.instance.UpdateList(this);
+            }
+           /* if(_isInView && !_wasInView)
+            {
+                //asteroid popped into view,show blip
+                warningBlipObject.SetActive(true);
+                warningBlipObject.GetComponent<EasyTween>().OpenCloseObjectAnimation();
+            }
+            else if (_wasInView && !_isInView)
+            {
+                //asteroid popped out of view,hide blip
+                warningBlipObject.SetActive(false);
+            }*/
         }
         if (applyDamage)
         {
@@ -143,6 +160,7 @@ public class Asteroid : MonoBehaviour {
     {
         //remove asteroid from warning blip list
         yield return new WaitUntil(() => { return WarningBlips.instance.RemoveBlip(this); });
+        yield return new WaitForSeconds(1);
         Destroy(this.gameObject);
     }
 
