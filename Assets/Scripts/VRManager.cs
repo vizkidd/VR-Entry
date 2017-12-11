@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.XR;
 
 public class VRManager : MonoBehaviour {
-    Camera mainCamera;
-
+    public Camera mainCamera, leftCamera, rightCamera;
+    public GameObject head;
 	// Use this for initialization
 	void Start () {
 
@@ -13,13 +13,16 @@ public class VRManager : MonoBehaviour {
     private void Awake()
     {
         //XRSettings.enabled = false;
-        XRSettings.showDeviceView = true;
+        //XRSettings.showDeviceView = true;
         XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
         mainCamera = GetComponentInChildren<Camera>();
         InputTracking.Recenter();
     }
     // Update is called once per frame
     void Update () {
-        mainCamera.transform.localRotation = InputTracking.GetLocalRotation(XRNode.CenterEye);	
-	}
+        mainCamera.transform.localRotation = InputTracking.GetLocalRotation(XRNode.CenterEye);
+        leftCamera.transform.localRotation = InputTracking.GetLocalRotation(XRNode.LeftEye);
+        rightCamera.transform.localRotation = InputTracking.GetLocalRotation(XRNode.RightEye);
+        head.transform.localRotation = InputTracking.GetLocalRotation(XRNode.Head);
+    }
 }

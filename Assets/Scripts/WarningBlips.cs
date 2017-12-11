@@ -43,7 +43,6 @@ public class WarningBlips : MonoBehaviour {
     
     void Start () {
         CanvasRect = ScreenManager.instance.blipCanvas.GetComponent<RectTransform>();
-        Debug.Log(CanvasRect.rect.width + " " + CanvasRect.rect.height);
         blipList = new Dictionary<Asteroid, GameObject>();
     }
 	
@@ -74,18 +73,30 @@ public class WarningBlips : MonoBehaviour {
         blipList = blipList.Where(item => item.Key != null).ToDictionary(t => t.Key, t => t.Value);
 
         foreach (var item in blipList)
-        {            
-            Vector2 screenPos = Camera.main.WorldToViewportPoint(item.Key.asteroidTransform.position);
-            Vector2 WorldObject_ScreenPosition = new Vector2(((screenPos.x * CanvasRect.sizeDelta.x) - (CanvasRect.sizeDelta.x * 0.5f)), (screenPos.y * CanvasRect.sizeDelta.y) - (CanvasRect.sizeDelta.y * 0.5f));
-            Image tempBlipImg = item.Value.GetComponent<Image>();
-            tempBlipImg.rectTransform.anchoredPosition = WorldObject_ScreenPosition;
-            //set size of blip wrt the size of the mesh
-            Rect rectangle = Get2DBoundsOf3DMesh(item.Key.asteroidMesh);
-            tempBlipImg.rectTransform.sizeDelta = new Vector2(rectangle.width , rectangle.height);
-            if(!tempBlipImg.enabled)
+        {
+            if (item.Key.IsInView && item.Key.isActiveAndEnabled)
             {
-                tempBlipImg.enabled = true;
-                item.Value.GetComponent<EasyTween>().OpenCloseObjectAnimation();
+                Vector2 screenPos = Camera.main.WorldToViewportPoint(item.Key.asteroidTransform.position);
+                Vector2 WorldObject_ScreenPosition = new Vector2(((screenPos.x * CanvasRect.sizeDelta.x) - (CanvasRect.sizeDelta.x * 0.5f)), (screenPos.y * CanvasRect.sizeDelta.y) - (CanvasRect.sizeDelta.y * 0.5f));
+                Image tempBlipImg = item.Value.GetComponent<Image>();
+                tempBlipImg.rectTransform.anchoredPosition = WorldObject_ScreenPosition;
+                //Debug.Log("==========Blip Position=========");
+                //Debug.Log(WorldObject_ScreenPosition);
+                //set size of blip wrt the size of the mesh
+                Rect rectangle = Get2DBoundsOf3DMesh(item.Key.asteroidMesh);
+                //Debug.Log("==========Blip Rectangle=========");
+                //Debug.Log(rectangle.width + ", " + rectangle.height);
+                tempBlipImg.rectTransform.sizeDelta = new Vector2(rectangle.width, rectangle.height);
+
+                if (!tempBlipImg.enabled)
+                {
+                    tempBlipImg.enabled = true;
+                    item.Value.GetComponent<EasyTween>().OpenCloseObjectAnimation();
+                }
+            }
+            else
+            {
+                item.Value.GetComponent<Image>().enabled = false;
             }
         }
 
@@ -157,7 +168,8 @@ public class WarningBlips : MonoBehaviour {
                     break;
             }
             tempBlipImg.preserveAspect = true;
-            
+            tempBlipImg.raycastTarget = false;
+
             if (!blipList.ContainsKey(asteroid))
             { blipList.Add(asteroid, tempBlipGO); }
             else
@@ -209,7 +221,7 @@ public class WarningBlips : MonoBehaviour {
 
     public static Vector2 WorldToGUIPoint(Vector3 world)
     {
-        Vector2 screenPoint = Camera.main.WorldToScreenPoint(world);
+        Vector2 screenPoint = ScreenManager.instance.uiCamera.WorldToScreenPoint(world);
         screenPoint.y = (float)Screen.height - screenPoint.y;
         return screenPoint;
     }

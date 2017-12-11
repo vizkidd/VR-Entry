@@ -14,7 +14,7 @@ public static class ViewCheck
             return false;
         }
         
-        foreach (var item in Camera.allCameras)
+        foreach (var item in Camera.allCameras.Where(item => item.tag == "UICamera").ToList())
         {
             Vector3 screenPoint = item.WorldToViewportPoint(transform.position);
             inView = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;

@@ -31,7 +31,7 @@ public class ScreenManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        blipCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
+        blipCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width/2, Screen.height);
 	}
 	
 	// Update is called once per frame
